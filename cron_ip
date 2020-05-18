@@ -1,0 +1,34 @@
+#! /bin/bash
+logInFile(){
+    current_time=`date +%Y.%m.%d-%H:%M:%S`
+    # $0指的是当前函数名
+    # $1则是第一个参数值 以此类推
+    str=$1\\t\\t$current_time
+    # 在shell里面的函数，echo一个字符串则是返回值
+    echo -e $str >> ~/scripts/old_ip.logs
+}
+getIp(){
+    echo `curl --silent --noproxy ip.sb ip.sb`
+}
+main(){
+    # 读取文件内容放到变量中
+    # lastIps=$(<~/scripts/old_ip.logs)
+    # echo $lastIps
+    # 一行一行输出文件内容
+    # while read line;do
+    #     echo $line
+    # done < ~/scripts/old_ip.logs
+    # 获取文件总行数
+    #echo $(wc -l ~/scripts/old_ip.logs)
+    # 获取文件最后一行内容
+    #lastLine=$(sed -n -e '$p' ~/scripts/old_ip.logs)
+    #echo $lastLine
+    # 利用awk以及sed获取文件最后一行并分割
+    lastIp=$(awk --field-separator="\t" '{print $1}' ~/scripts/old_ip.logs | sed -n -e '$p')
+    currentIp=$(getIp)
+    if [ "$lastIp" != "$currentIp" ];then
+        logInFile $currentIp
+    fi
+    #echo $lastIp
+}
+main
