@@ -11,24 +11,28 @@ getIp(){
     echo `curl --silent --noproxy ip.sb ip.sb`
 }
 main(){
-    # 读取文件内容放到变量中
-    # lastIps=$(<~/scripts/old_ip.logs)
-    # echo $lastIps
-    # 一行一行输出文件内容
-    # while read line;do
-    #     echo $line
-    # done < ~/scripts/old_ip.logs
-    # 获取文件总行数
-    #echo $(wc -l ~/scripts/old_ip.logs)
-    # 获取文件最后一行内容
-    #lastLine=$(sed -n -e '$p' ~/scripts/old_ip.logs)
-    #echo $lastLine
     # 利用awk以及sed获取文件最后一行并分割
     lastIp=$(awk --field-separator="\t" '{print $1}' ~/scripts/old_ip.logs | sed -n -e '$p')
     currentIp=$(getIp)
+    if [ "$currentIp" == "" ];then
+        return 0
+    fi
     if [ "$lastIp" != "$currentIp" ];then
         logInFile $currentIp
     fi
-    #echo $lastIp
+}
+test(){
+    # 读取文件内容放到变量中
+    lastIps=$(<~/scripts/old_ip.logs)
+    echo $lastIps
+    # 一行一行输出文件内容
+    while read line;do
+        echo $line
+    done < ~/scripts/old_ip.logs
+    # 获取文件总行数
+    echo $(wc -l ~/scripts/old_ip.logs)
+    # 获取文件最后一行内容
+    lastLine=$(sed -n -e '$p' ~/scripts/old_ip.logs)
+    echo $lastLine
 }
 main
